@@ -1,0 +1,7 @@
+<h1>Welcome to the Planner</h1>
+<h3>Tasks:</h3>
+<ul>
+    {% for task in tasks %}
+    <li>{{ task.description }}</li>
+    {% endfor %}
+</ul>
