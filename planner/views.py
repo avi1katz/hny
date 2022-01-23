@@ -11,5 +11,7 @@ def index(request):
 
 class IndexPage(generic.TemplateView):
     template_name = 'planner/index.html'
-    tasks = Task.objects.order_by('-pk')
-    context = {'tasks': tasks}
+
+    def get_context_data(self, **kwargs):
+        tasks = Task.objects.order_by('-pk')
+        return {'tasks': tasks}
