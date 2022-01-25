@@ -1,10 +1,10 @@
 import json
 
-from django.forms import forms
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import generic
 
+from planner.forms import TaskForm
 from planner.models import Task
 
 
@@ -12,12 +12,30 @@ def index(request):
     return HttpResponse('Hello, world!')
 
 
-class IndexPage(generic.TemplateView):
+# class IndexPage(generic.TemplateView):
+#     template_name = 'planner/index.html'
+#
+#     def get_context_data(self, **kwargs):
+#         tasks = Task.objects.order_by('-pk')
+#         return {'tasks': tasks}
+
+
+class IndexPage(generic.edit.FormView):
     template_name = 'planner/index.html'
+    form_class = TaskForm
+    success_url = '/planner/'
+
 
     def get_context_data(self, **kwargs):
         tasks = Task.objects.order_by('-pk')
-        return {'tasks': tasks}
+        return super().get_context_data(tasks=tasks)
+
+    def form_valid(self, form):
+        description = form.cleaned_data['description']
+        min_to_complete = form.cleaned_data['minutes_to_complete']
+        task = Task(description=description, minutes_to_complete=min_to_complete)
+        task.save()
+        return super().form_valid(form)
 
 
 def create_task(request):
