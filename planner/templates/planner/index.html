@@ -3,25 +3,40 @@
 {% block title %}Planner{% endblock %}
 {% block content %}
 <h1>Welcome to the Planner</h1>
-<h3>Tasks:</h3>
-<ul>
-    {% for task in tasks %}
-    <li>[{% if task.is_completed %} X {% endif %}]
-        {{ task.description  }}
-        ({{ task.minutes_to_complete }}min)
-        <a class="btn btn-sm btn-danger" data-confirm="Are you sure?" data-method="delete" href="delete_task/{{ task.id }}" rel="nofollow">X</a>
-    </li>
-    {% endfor %}
-    <br />
-</ul>
-<form id="task-form" method="post", action="/planner/" >
-    {% csrf_token %}
-<!--        <input type="text" id="task_name" name="task_name" value="new task..."/>-->
-<!--        <input type="number" id="min" name="min" value="30">-->
-    {{ form.description }}
-    {{ form.minutes_to_complete }}
-        <input type="submit" value="Add Task">
-</form>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Tasks:</h3>
+            <form id="task-form" method="post", action="/planner/" class="form-row" >
+                {% csrf_token %}
+                <div class="col">
+                    {{ form.description }}
+                </div>
+                <div class="col">
+                    {{ form.minutes_to_complete }}
+                </div>
+                <div class="col">
+                    <input class="btn btn-primary" type="submit" value="Add Task">
+                </div>
+            </form>
+            <ul>
+                {% for task in tasks %}
+                <li>[{% if task.is_completed %} X {% endif %}]
+                    {{ task.description  }}
+                    ({{ task.minutes_to_complete }}min)
+                    <a class="btn btn-sm btn-danger" data-confirm="Are you sure?" data-method="delete" href="delete_task/{{ task.id }}" rel="nofollow">X</a>
+                </li>
+                {% endfor %}
+                <br />
+            </ul>
+        </div>
+        <div class="col">
+            <h3>Agenda</h3>
+        </div>
+    </div>
+
+
+</div>
 
 <!--<script>-->
 <!--// AJAX for posting-->
