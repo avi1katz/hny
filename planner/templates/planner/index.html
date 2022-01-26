@@ -6,7 +6,11 @@
 <h3>Tasks:</h3>
 <ul>
     {% for task in tasks %}
-    <li>[{% if task.is_completed %} X {% endif %}] {{ task.description  }} ({{ task.minutes_to_complete }}min)</li>
+    <li>[{% if task.is_completed %} X {% endif %}]
+        {{ task.description  }}
+        ({{ task.minutes_to_complete }}min)
+        <a class="btn btn-sm btn-danger" data-confirm="Are you sure?" data-method="delete" href="delete_task/{{ task.id }}" rel="nofollow">X</a>
+    </li>
     {% endfor %}
     <br />
 </ul>

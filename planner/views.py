@@ -1,8 +1,8 @@
 import json
 
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views import generic
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.views import generic, View
 
 from planner.forms import TaskForm
 from planner.models import Task
@@ -25,10 +25,10 @@ class IndexPage(generic.edit.FormView):
     form_class = TaskForm
     success_url = '/planner/'
 
-
     def get_context_data(self, **kwargs):
-        tasks = Task.objects.order_by('-pk')
-        return super().get_context_data(tasks=tasks)
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = Task.objects.order_by('-pk')
+        return context
 
     def form_valid(self, form):
         description = form.cleaned_data['description']
@@ -36,6 +36,12 @@ class IndexPage(generic.edit.FormView):
         task = Task(description=description, minutes_to_complete=min_to_complete)
         task.save()
         return super().form_valid(form)
+
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+    task.delete()
+    return HttpResponseRedirect('/planner')
 
 
 def create_task(request):
