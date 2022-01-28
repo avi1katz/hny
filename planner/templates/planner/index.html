@@ -31,7 +31,17 @@
             </ul>
         </div>
         <div class="col">
-            <h3>Agenda</h3>
+            <h3>Agenda {{ agenda.date }}</h3>
+            {% if agenda_items %}
+            <table>
+                {% for item in agenda_items %}
+                <tr>
+                    <td>{{ item.start_time }}</td>
+                    <td>{{ item.task.description }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
         </div>
     </div>
 

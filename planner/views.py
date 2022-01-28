@@ -1,11 +1,12 @@
 import json
+from datetime import datetime
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic, View
 
 from planner.forms import TaskForm
-from planner.models import Task
+from planner.models import Task, Agenda
 
 
 def index(request):
@@ -28,6 +29,17 @@ class IndexPage(generic.edit.FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tasks'] = Task.objects.order_by('-pk')
+
+        # get todays agenda
+        today_agenda = None
+        try:
+            today_agenda = Agenda.objects.get(date=datetime.now().date())
+        except:
+            print('not found for today')
+        if not today_agenda:
+            today_agenda = Agenda.objects.create(date=datetime.now().date())
+        context['agenda'] = today_agenda
+
         return context
 
     def form_valid(self, form):
