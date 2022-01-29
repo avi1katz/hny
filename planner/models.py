@@ -21,7 +21,7 @@ class Agenda(models.Model):
                                null=True, )
 
     def __str__(self):
-        return self.date
+        return self.date.strftime("%d-%b-%y")
 
 
 # Agenda_Item - agenda_id, start_time, task_id

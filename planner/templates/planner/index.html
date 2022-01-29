@@ -32,9 +32,9 @@
         </div>
         <div class="col">
             <h3>Agenda {{ agenda.date }}</h3>
-            {% if agenda_items %}
+            {% if agenda.agenda_items %}
             <table>
-                {% for item in agenda_items %}
+                {% for item in agenda.agenda_items.all %}
                 <tr>
                     <td>{{ item.start_time }}</td>
                     <td>{{ item.task.description }}</td>

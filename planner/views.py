@@ -40,6 +40,7 @@ class IndexPage(generic.edit.FormView):
             today_agenda = Agenda.objects.create(date=datetime.now().date())
         context['agenda'] = today_agenda
 
+
         return context
 
     def form_valid(self, form):
