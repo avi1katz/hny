@@ -2,38 +2,58 @@
 
 {% block title %}Planner{% endblock %}
 {% block content %}
-<h1>Welcome to the Planner</h1>
+<style>
+    tr.strikeout td:before {
+    content: " ";
+    position: absolute;
+    top: 45%;
+    left: 0;
+    border-bottom: 1px solid #111;
+    width: 100%;
+}
+</style>
+<div class="container">
+    <h1>Welcome to the Planner</h1>
+</div>
 <div class="container">
     <div class="row">
         <div class="col">
             <h3>Tasks:</h3>
             <form id="task-form" method="post", action="/planner/" class="form-row" >
                 {% csrf_token %}
-                <div class="col">
+                <div class="col-9">
                     {{ form.description }}
                 </div>
-                <div class="col">
+                <div class="col-2">
                     {{ form.minutes_to_complete }}
                 </div>
-                <div class="col">
-                    <input class="btn btn-primary" type="submit" value="Add Task">
+                <div class="col-1">
+                    <input class="btn btn-primary" type="submit" value="+">
                 </div>
             </form>
-            <ul>
+            {% if tasks %}
+            <table class="table table-hover">
                 {% for task in tasks %}
-                <li>[{% if task.is_completed %} X {% endif %}]
-                    {{ task.description  }}
-                    ({{ task.minutes_to_complete }}min)
-                    <a class="btn btn-sm btn-danger" data-confirm="Are you sure?" data-method="delete" href="delete_task/{{ task.id }}" rel="nofollow">X</a>
-                </li>
+                <tr
+                        {% if task.is_completed %} class="table-active strikeout" {% endif %}
+                        onclick="(function(){console.log({{task.id}}); window.location='toggle_complete_task/{{ task.id }}'})()">
+                    <td class="col-8">{{ task.description  }}</td>
+                    <td class="col-2">({{ task.minutes_to_complete }}min)</td>
+                    <td class="col-2"><a class="btn btn-sm btn-danger"
+                           data-confirm="Are you sure?"
+                           data-method="delete"
+                           href="delete_task/{{ task.id }}"
+                           rel="nofollow">X</a></td>
+                </tr>
                 {% endfor %}
                 <br />
-            </ul>
+            </table>
+            {% endif %}
         </div>
         <div class="col">
             <h3>Agenda {{ agenda.date }}</h3>
             {% if agenda.agenda_items %}
-            <table>
+            <table class="table table-sm">
                 {% for item in agenda.agenda_items.all %}
                 <tr>
                     <td>{{ item.start_time }}</td>

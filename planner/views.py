@@ -57,6 +57,13 @@ def delete_task(request, task_id):
     return HttpResponseRedirect('/planner')
 
 
+def toggle_complete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+    task.is_completed = not task.is_completed
+    task.save()
+    return HttpResponseRedirect('/planner')
+
+
 def create_task(request):
     if request.method == 'POST':
         description = request.POST.get('description')
