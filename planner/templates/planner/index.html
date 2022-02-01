@@ -56,7 +56,7 @@
             <table class="table table-sm">
                 {% for item in agenda.agenda_items.all %}
                 <tr>
-                    <td>{{ item.start_time }}</td>
+                    <td><input type="time" value="{{ item.start_time|date:"H:i" }}"/></td>
                     <td>{{ item.task.description }}</td>
                 </tr>
                 {% endfor %}
