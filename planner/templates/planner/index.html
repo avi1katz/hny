@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col">
             <h3>Tasks:</h3>
-            <form id="task-form" method="post", action="/planner/" class="form-row" >
+            <form id="task-form" method="post", action="/planner/" class="form-row" autocomplete="off">
                 {% csrf_token %}
                 <div class="col-9">
                     {{ form.description }}
@@ -54,12 +54,21 @@
             <h3>Agenda {{ agenda.date }}</h3>
             {% if agenda.agenda_items %}
             <table class="table table-sm">
-                {% for item in agenda.agenda_items.all %}
-                <tr>
-                    <td><input type="time" value="{{ item.start_time|date:"H:i" }}"/></td>
-                    <td>{{ item.task.description }}</td>
-                </tr>
-                {% endfor %}
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-3">Start Time</th>
+                        <th scope="col" class="col-9">Task</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in agenda.agenda_items.all %}
+                    <tr>
+                        <td><input type="time" value="{{ item.start_time|date:'H:i' }}" autocomplete="off"/></td>
+                        <td>{{ item.task.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
             </table>
             {% endif %}
         </div>
