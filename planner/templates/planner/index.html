@@ -33,19 +33,21 @@
             </form>
             {% if tasks %}
             <table class="table table-hover">
-                {% for task in tasks %}
-                <tr
-                        {% if task.is_completed %} class="table-active strikeout" {% endif %}
-                        onclick="(function(){console.log({{task.id}}); window.location='toggle_complete_task/{{ task.id }}'})()">
-                    <td class="col-8">{{ task.description  }}</td>
-                    <td class="col-2">({{ task.minutes_to_complete }}min)</td>
-                    <td class="col-2"><a class="btn btn-sm btn-danger"
-                           data-confirm="Are you sure?"
-                           data-method="delete"
-                           href="delete_task/{{ task.id }}"
-                           rel="nofollow">X</a></td>
-                </tr>
-                {% endfor %}
+                <tbody class="sortable">
+                    {% for task in tasks %}
+                    <tr
+                            {% if task.is_completed %} class="table-active strikeout" {% endif %}
+                            onclick="(function(){console.log({{task.id}}); window.location='toggle_complete_task/{{ task.id }}'})()">
+                        <td class="col-8">{{ task.description  }}</td>
+                        <td class="col-2">({{ task.minutes_to_complete }}min)</td>
+                        <td class="col-2"><a class="btn btn-sm btn-danger"
+                                             data-confirm="Are you sure?"
+                                             data-method="delete"
+                                             href="delete_task/{{ task.id }}"
+                                             rel="nofollow">X</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
                 <br />
             </table>
             {% endif %}
@@ -60,7 +62,7 @@
                         <th scope="col" class="col-9">Task</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="agenda_items" class="sortable">
                     {% for item in agenda.agenda_items.all %}
                     <tr>
                         <td><input type="time" value="{{ item.start_time|date:'H:i' }}" autocomplete="off"/></td>
@@ -167,4 +169,31 @@
 
 <!--});-->
 <!--</script>-->
-{% endblock %}
+{% endblock content %}
+
+{% block javascript %}
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+$(function() {
+    var oldList, newList, item;
+    $('.sortable').sortable({
+        start: function(event, ui) {
+            item = ui.item;
+            newList = oldList = ui.item.parent().parent();
+        },
+        stop: function(event, ui) {
+            alert("Moved " + item.text() + " from " + oldList.attr('id') + " to " + newList.attr('id'));
+            if(oldList.attr('id') != newList.attr('id')){
+            ui.item.clone().appendTo(newList);
+                    $(this).sortable('cancel');
+                    }
+        },
+        change: function(event, ui) {
+            if(ui.sender)
+            newList = ui.placeholder.parent().parent();
+        },
+        connectWith: ".sortable"
+    }).disableSelection();
+});
+</script>
+{% endblock javascript %}
