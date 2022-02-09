@@ -33,11 +33,12 @@
             </form>
             {% if tasks %}
             <table class="table table-hover">
-                <tbody class="sortable">
+                <tbody id="task_sortable" class="sortable">
                     {% for task in tasks %}
                     <tr
                             {% if task.is_completed %} class="table-active strikeout" {% endif %}
-                            onclick="(function(){console.log({{task.id}}); window.location='toggle_complete_task/{{ task.id }}'})()">
+                            data-taskid="{{task.id}}"
+                            onclick="completeTask(this)">
                         <td class="col-8">{{ task.description  }}</td>
                         <td class="col-2">({{ task.minutes_to_complete }}min)</td>
                         <td class="col-2"><a class="btn btn-sm btn-danger"
@@ -62,7 +63,7 @@
                         <th scope="col" class="col-9">Task</th>
                     </tr>
                 </thead>
-                <tbody id="agenda_items" class="sortable">
+                <tbody id="agenda_items">
                     {% for item in agenda.agenda_items.all %}
                     <tr>
                         <td><input type="time" value="{{ item.start_time|date:'H:i' }}" autocomplete="off"/></td>
@@ -174,26 +175,35 @@
 {% block javascript %}
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script>
+var isBeingSorted = false;
+function completeTask(task){
+    console.log(task.dataset.taskid);
+    if (!isBeingSorted)
+        window.location='toggle_complete_task/' + task.dataset.taskid
+}
 $(function() {
     var oldList, newList, item;
-    $('.sortable').sortable({
+    $('#task_sortable').sortable({
         start: function(event, ui) {
+            isBeingSorted = true;
             item = ui.item;
             newList = oldList = ui.item.parent().parent();
         },
         stop: function(event, ui) {
             alert("Moved " + item.text() + " from " + oldList.attr('id') + " to " + newList.attr('id'));
             if(oldList.attr('id') != newList.attr('id')){
-            ui.item.clone().appendTo(newList);
-                    $(this).sortable('cancel');
-                    }
+                ui.item.clone().appendTo(newList.find('.sortable'));
+                $(this).sortable('cancel');
+            }
+            isBeingSorted = false;
         },
         change: function(event, ui) {
             if(ui.sender)
-            newList = ui.placeholder.parent().parent();
+                newList = ui.placeholder.parent().parent();
         },
-        connectWith: ".sortable"
+        connectWith: "#agenda_items"
     }).disableSelection();
+    $('#agenda_items').sortable({})
 });
 </script>
 {% endblock javascript %}
