@@ -177,30 +177,40 @@
 <script>
 var isBeingSorted = false;
 function completeTask(task){
+    console.log('called completeTask()');
     console.log(task.dataset.taskid);
-    if (!isBeingSorted)
-        window.location='toggle_complete_task/' + task.dataset.taskid
+    if (!isBeingSorted) {
+<!--        window.location='toggle_complete_task/' + task.dataset.taskid;-->
+    }
 }
 $(function() {
     var oldList, newList, item;
     $('#task_sortable').sortable({
         start: function(event, ui) {
+            console.log('start');
             isBeingSorted = true;
             item = ui.item;
             newList = oldList = ui.item.parent().parent();
         },
         stop: function(event, ui) {
-            alert("Moved " + item.text() + " from " + oldList.attr('id') + " to " + newList.attr('id'));
+            console.log('stop');
+<!--            alert("Moved " + item.text() + " from " + oldList.attr('id') + " to " + newList.attr('id'));-->
             if(oldList.attr('id') != newList.attr('id')){
                 ui.item.clone().appendTo(newList.find('.sortable'));
                 $(this).sortable('cancel');
             }
+            event.stopPropagation();
             isBeingSorted = false;
         },
         change: function(event, ui) {
+            console.log('change');
             if(ui.sender)
                 newList = ui.placeholder.parent().parent();
         },
+        update: function(event, ui) {
+            console.log('update');
+        },
+        helper: "clone",
         connectWith: "#agenda_items"
     }).disableSelection();
     $('#agenda_items').sortable({})
