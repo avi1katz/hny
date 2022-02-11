@@ -36,9 +36,10 @@
                 <tbody id="task_sortable" class="sortable">
                     {% for task in tasks %}
                     <tr
-                            {% if task.is_completed %} class="table-active strikeout" {% endif %}
-                            data-taskid="{{task.id}}"
-                            onclick="completeTask(this)">
+                            class="completable
+                            {% if task.is_completed %} table-active strikeout{% endif %}
+                            "
+                            data-taskid="{{task.id}}">
                         <td class="col-8">{{ task.description  }}</td>
                         <td class="col-2">({{ task.minutes_to_complete }}min)</td>
                         <td class="col-2"><a class="btn btn-sm btn-danger"
@@ -175,15 +176,13 @@
 {% block javascript %}
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script>
-var isBeingSorted = false;
-function completeTask(task){
+function completeTask(event){
     console.log('called completeTask()');
-    console.log(task.dataset.taskid);
-    if (!isBeingSorted) {
-<!--        window.location='toggle_complete_task/' + task.dataset.taskid;-->
-    }
+    console.log(event.currentTarget.dataset.taskid);
+    window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;
 }
 $(function() {
+    $(".completable").click(completeTask);
     var oldList, newList, item;
     $('#task_sortable').sortable({
         start: function(event, ui) {
@@ -213,7 +212,16 @@ $(function() {
         helper: "clone",
         connectWith: "#agenda_items"
     }).disableSelection();
-    $('#agenda_items').sortable({})
+    $('#agenda_items').sortable({
+        revert: true,
+        receive: function(event, ui) {
+            console.log("taskid: ", ui.item[0].dataset.taskid);
+            console.log("ui: ",ui.item.index());
+            //kick off endpoint to add task to agenda
+            //use ui.item.index()!
+<!--            window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;-->
+        }
+    })
 });
 </script>
 {% endblock javascript %}
