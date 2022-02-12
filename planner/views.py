@@ -87,3 +87,14 @@ def create_task(request):
             json.dumps({"nothing to see": "this isn't happening"}),
             content_type="application/json"
         )
+
+
+def add_task_at_index(request, task_id, index):
+    task = get_object_or_404(Task, pk=task_id)
+    today_agenda = Agenda.objects.get(date=datetime.now().date())
+    agenda_items_list = today_agenda.agenda_items.all()
+    new_time = '06:00'
+    if index <= agenda_items_list.count():
+        new_time = agenda_items_list[index].start_time
+
+    return HttpResponseRedirect('/planner')
