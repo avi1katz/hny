@@ -215,11 +215,11 @@ $(function() {
     $('#agenda_items').sortable({
         revert: true,
         receive: function(event, ui) {
-            console.log("taskid: ", ui.item[0].dataset.taskid);
-            console.log("ui: ",ui.item.index());
-            //kick off endpoint to add task to agenda
-            //use ui.item.index()!
-<!--            window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;-->
+            task_id = ui.item[0].dataset.taskid;
+            console.log("taskid: ", task_id);
+            item_index = ui.item.index()
+            console.log("item_index: ",item_index);
+            window.location='add_task/' + task_id + '/at_index/' + item_index;
         }
     })
 });

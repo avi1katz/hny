@@ -1,12 +1,12 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic, View
 
 from planner.forms import TaskForm
-from planner.models import Task, Agenda
+from planner.models import Task, Agenda, AgendaItem
 
 
 def index(request):
@@ -89,12 +89,18 @@ def create_task(request):
         )
 
 
-def add_task_at_index(request, task_id, index):
+def add_task_at_index(request, task_id, item_index):
     task = get_object_or_404(Task, pk=task_id)
     today_agenda = Agenda.objects.get(date=datetime.now().date())
     agenda_items_list = today_agenda.agenda_items.all()
-    new_time = '06:00'
-    if index <= agenda_items_list.count():
-        new_time = agenda_items_list[index].start_time
-
+    if item_index == 0:
+        new_item_start_time = '06:00'
+    else:
+        prev_item_start_time = agenda_items_list[item_index-1].start_time
+        new_item_start_time = (datetime.combine(date(1, 1, 1), prev_item_start_time) + timedelta(minutes=30)).time()
+    # today_agenda.agenda_items.create(start_time=new_item_start_time,
+    #                                  task=task)
+    AgendaItem.objects.update_or_create(
+        task=task, agenda=today_agenda,
+        defaults={'start_time': new_item_start_time})
     return HttpResponseRedirect('/planner')
