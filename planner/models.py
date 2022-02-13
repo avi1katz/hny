@@ -40,6 +40,9 @@ class AgendaItem(models.Model):
 
     class Meta:
         ordering = ['start_time', ]
+        constraints = [
+            models.UniqueConstraint(fields=['agenda', 'task'], name='unique_task_for_agenda')
+        ]
 
     def __str__(self):
         return f'Agenda: {self.agenda}, start_time: {self.start_time}, task: {self.task}'
