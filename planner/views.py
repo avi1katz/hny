@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta, date
 
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic, View
@@ -28,18 +29,12 @@ class IndexPage(generic.edit.FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tasks'] = Task.objects.order_by('-pk')
+        context['tasks'] = Task.objects.filter(Q(agenda_items__isnull=True)
+                                               | Q(agenda_items__agenda__date=datetime.now()))
 
         # get todays agenda
-        today_agenda = None
-        try:
-            today_agenda = Agenda.objects.get(date=datetime.now().date())
-        except:
-            print('not found for today')
-        if not today_agenda:
-            today_agenda = Agenda.objects.create(date=datetime.now().date())
+        today_agenda, _ = Agenda.objects.get_or_create(date=datetime.now())
         context['agenda'] = today_agenda
-
 
         return context
 
