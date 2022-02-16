@@ -38,6 +38,7 @@
                     <tr
                             class="completable
                             {% if task.is_completed %} table-active strikeout{% endif %}
+                            {% if task.agenda_items.all %} table-warning {% endif %}
                             "
                             data-taskid="{{task.id}}">
                         <td class="col-8">{{ task.description  }}</td>
@@ -67,7 +68,14 @@
                 <tbody id="agenda_items">
                     {% for item in agenda.agenda_items.all %}
                     <tr>
-                        <td><input type="time" value="{{ item.start_time|date:'H:i' }}" autocomplete="off"/></td>
+                        <td>
+                            <input class="time-input"
+                                   type="time"
+                                   value="{{ item.start_time|date:'H:i' }}"
+                                   autocomplete="off"
+                                   data-itemid="{{item.id}}"
+                            />
+                        </td>
                         <td>{{ item.task.description }}</td>
                     </tr>
                     {% endfor %}
@@ -181,8 +189,19 @@ function completeTask(event){
     console.log(event.currentTarget.dataset.taskid);
     window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;
 }
+
+function updateAgendaItem(event){
+    originalValue = event.target.defaultValue;
+    newValue = event.target.value;
+    console.log(event.target.value);
+    console.log(event.target.defaultValue);
+    if ( originalValue !== newValue) {
+        window.location='update_agenda_item/' + event.currentTarget.dataset.itemid + '/new_time/' + newValue;
+    }
+}
 $(function() {
     $(".completable").click(completeTask);
+    $(".time-input").blur(updateAgendaItem);
     var oldList, newList, item;
     $('#task_sortable').sortable({
         start: function(event, ui) {

@@ -33,7 +33,7 @@ class IndexPage(generic.edit.FormView):
                                                | Q(agenda_items__agenda__date=datetime.now()))
 
         # get todays agenda
-        today_agenda, _ = Agenda.objects.get_or_create(date=datetime.now())
+        today_agenda, _ = Agenda.objects.get_or_create(date=datetime.now().date())
         context['agenda'] = today_agenda
 
         return context
@@ -98,4 +98,9 @@ def add_task_at_index(request, task_id, item_index):
     AgendaItem.objects.update_or_create(
         task=task, agenda=today_agenda,
         defaults={'start_time': new_item_start_time})
+    return HttpResponseRedirect('/planner')
+
+
+def update_agenda_item_time(request, item_id, new_time):
+    AgendaItem.objects.filter(id=item_id).update(start_time=new_time)
     return HttpResponseRedirect('/planner')
