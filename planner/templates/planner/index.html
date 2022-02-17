@@ -41,7 +41,11 @@
                             {% if task.agenda_items.all %} table-warning {% endif %}
                             "
                             data-taskid="{{task.id}}">
-                        <td class="col-8">{{ task.description  }}</td>
+                        <td class="col-8">{{ task.description  }}
+                        {% if task.agenda_items.all %}
+                            ({{ task.agenda_items.all.0.start_time }})
+                        {% endif %}
+                        </td>
                         <td class="col-2">({{ task.minutes_to_complete }}min)</td>
                         <td class="col-2"><a class="btn btn-sm btn-danger"
                                              data-confirm="Are you sure?"
@@ -62,7 +66,8 @@
                 <thead>
                     <tr>
                         <th scope="col" class="col-3">Start Time</th>
-                        <th scope="col" class="col-9">Task</th>
+                        <th scope="col" class="col-7">Task</th>
+                        <th scope="col" class="col-2"></th>
                     </tr>
                 </thead>
                 <tbody id="agenda_items">
@@ -77,6 +82,11 @@
                             />
                         </td>
                         <td>{{ item.task.description }}</td>
+                        <td><a class="btn btn-sm btn-warning"
+                                             data-confirm="Are you sure?"
+                                             data-method="delete"
+                                             href="delete_agenda_item/{{ item.id }}"
+                                             rel="nofollow" >-</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

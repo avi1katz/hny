@@ -104,3 +104,8 @@ def add_task_at_index(request, task_id, item_index):
 def update_agenda_item_time(request, item_id, new_time):
     AgendaItem.objects.filter(id=item_id).update(start_time=new_time)
     return HttpResponseRedirect('/planner')
+
+
+def delete_agenda_item(request, item_id):
+    AgendaItem.objects.filter(id=item_id).delete()
+    return HttpResponseRedirect('/planner')
