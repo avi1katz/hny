@@ -3,15 +3,56 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
 <script>
-
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'timeGridDay'
+      initialView: 'timeGridDay',
+      weekNumbers: true,
+      nowIndicator: true,
+      slotMinTime: '06:00:00',
+      slotMaxTime: '22:00:00'
     });
     calendar.render();
   });
 
+document.addEventListener('DOMContentLoaded', function() {
+
+    var containerEl = document.getElementById('tasks');
+    var calendarEl = document.getElementById('calendar');
+    var checkbox = document.getElementById('drop-remove');
+
+    // initialize the external events
+    // -----------------------------------------------------------------
+
+    new Draggable(containerEl, {
+      itemSelector: '.task',
+      eventData: function(eventEl) {
+        return {
+          title: eventEl.innerText
+        };
+      }
+    });
+
+    // initialize the calendar
+    // -----------------------------------------------------------------
+
+    var calendar = new Calendar(calendarEl, {
+      initialView: 'timeGridDay',
+      weekNumbers: true,
+      nowIndicator: true,
+      editable: true,
+      droppable: true, // this allows things to be dropped onto the calendar
+      drop: function(info) {
+        // is the "remove after drop" checkbox checked?
+        if (checkbox.checked) {
+          // if so, remove the element from the "Draggable Events" list
+          info.draggedEl.parentNode.removeChild(info.draggedEl);
+        }
+      }
+    });
+
+    calendar.render();
+  });
 </script>
 <style>
     tr.strikeout td:before {
@@ -48,10 +89,10 @@
             </form>
             {% if tasks %}
             <table class="table table-hover">
-                <tbody id="task_sortable" class="sortable">
+                <tbody id="task_sortable" class="sortable tasks">
                     {% for task in tasks %}
                     <tr
-                            class="completable
+                            class="completable task
                             {% if task.is_completed %} table-active strikeout{% endif %}
                             {% if task.agenda_items.all %} table-warning {% endif %}
                             "
