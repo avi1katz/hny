@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(eventEl);
         return {
           title: eventEl.querySelector(".description").innerText,
-          duration: eventEl.dataset.duration
+          duration: {minutes: eventEl.dataset.duration}
         };
       }
     });
@@ -31,17 +31,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var calendar = new Calendar(calendarEl, {
       initialView: 'timeGridDay',
+<!--      slotDuration: {minutes: 15},-->
       weekNumbers: true,
       nowIndicator: true,
       editable: true,
       droppable: true, // this allows things to be dropped onto the calendar
       drop: function(info) {
-        // is the "remove after drop" checkbox checked?
-<!--        if (checkbox.checked) {-->
-<!--          // if so, remove the element from the "Draggable Events" list-->
-<!--          info.draggedEl.parentNode.removeChild(info.draggedEl);-->
-<!--        }-->
-      }
+        console.log(info);
+        window.location='add_task/' + info.draggedEl.dataset.taskid +
+        '/at_time/' + info.date.getHours()+':'+info.date.getMinutes();
+      },
+      eventClick: function(mouseClickInfo) {
+        console.log(mouseClickInfo.event.id);
+        mouseClickInfo.event.remove();
+        window.location='delete_agenda_item/' + mouseClickInfo.event.id;
+      },
+      events:
+      [
+        {% for item in agenda.agenda_items.all %}
+            {
+                id: {{ item.id }},
+                title: "{{ item.task.description }}",
+                startTime: "{{ item.start_time|date:'H:i' }}",
+                duration: {minutes: {{ item.task.minutes_to_complete }}}
+            },
+        {% endfor %}
+      ]
     });
 
     calendar.render();
