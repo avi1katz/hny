@@ -4,6 +4,7 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    $(".completable").click(completeTask);
     var Calendar = FullCalendar.Calendar;
     var Draggable = FullCalendar.Draggable;
 
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 </script>
 <style>
-    tr.strikeout td:before {
+tr.strikeout td:before {
     content: " ";
     position: absolute;
     top: 45%;
@@ -71,13 +72,18 @@ document.addEventListener('DOMContentLoaded', function() {
     border-bottom: 1px solid #111;
     width: 100%;
 }
+#agenda {
+    height: 90vh
+}
 </style>
 {% endblock style %}
 {% block title %}Planner{% endblock title %}
 
 {% block content %}
 <div class="container">
-    <h1>Welcome to the Planner</h1>
+    <div class="row justify-content-center">
+        <h1>Welcome to the Planner</h1>
+    </div>
 </div>
 <div class="container">
     <div class="row">
@@ -124,43 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
             </table>
             {% endif %}
         </div>
-        <div id="agenda" class="col">
-            <h3>Agenda {{ agenda.date }}</h3>
-            {% if agenda.agenda_items %}
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th scope="col" class="col-3">Start Time</th>
-                        <th scope="col" class="col-7">Task</th>
-                        <th scope="col" class="col-2"></th>
-                    </tr>
-                </thead>
-                <tbody id="agenda_items">
-                    {% for item in agenda.agenda_items.all %}
-                    <tr>
-                        <td>
-                            <input class="time-input"
-                                   type="time"
-                                   value="{{ item.start_time|date:'H:i' }}"
-                                   autocomplete="off"
-                                   data-itemid="{{item.id}}"
-                            />
-                        </td>
-                        <td>{{ item.task.description }}</td>
-                        <td><a class="btn btn-sm btn-warning"
-                                             data-confirm="Are you sure?"
-                                             data-method="delete"
-                                             href="delete_agenda_item/{{ item.id }}"
-                                             rel="nofollow" >-</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-            {% endif %}
-        </div>
+        <div id="agenda" class="col"></div>
     </div>
-    <div id='calendar' class="row"></div>
 
 </div>
 
@@ -185,39 +156,5 @@ function updateAgendaItem(event){
     }
 }
 
-
-<!--$(function() {-->
-<!--    $(".completable").click(completeTask);-->
-<!--    $(".time-input").blur(updateAgendaItem);-->
-<!--    var oldList, newList, item;-->
-<!--    $('#task_sortable').sortable({-->
-<!--        start: function(event, ui) {-->
-<!--            console.log('start');-->
-<!--        },-->
-<!--        stop: function(event, ui) {-->
-<!--            console.log('stop');-->
-<!--        },-->
-<!--        change: function(event, ui) {-->
-<!--            console.log('change');-->
-<!--            if(ui.sender)-->
-<!--                newList = ui.placeholder.parent().parent();-->
-<!--        },-->
-<!--        update: function(event, ui) {-->
-<!--            console.log('update');-->
-<!--        },-->
-<!--        helper: "clone",-->
-<!--        connectWith: "#agenda_items"-->
-<!--    }).disableSelection();-->
-<!--    $('#agenda_items').sortable({-->
-<!--        revert: true,-->
-<!--        receive: function(event, ui) {-->
-<!--            task_id = ui.item[0].dataset.taskid;-->
-<!--            console.log("taskid: ", task_id);-->
-<!--            item_index = ui.item.index()-->
-<!--            console.log("item_index: ",item_index);-->
-<!--            window.location='add_task/' + task_id + '/at_index/' + item_index;-->
-<!--        }-->
-<!--    })-->
-<!--});-->
 </script>
 {% endblock javascript %}
