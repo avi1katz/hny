@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta, date
 
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic, View
@@ -53,9 +53,8 @@ def delete_task(request, task_id):
 
 
 def toggle_complete_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
-    task.is_completed = not task.is_completed
-    task.save()
+    Task.objects.filter(pk=task_id)\
+        .update(is_completed=Q(is_completed=False))
     return HttpResponseRedirect('/planner')
 
 
