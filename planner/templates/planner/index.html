@@ -49,7 +49,11 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       eventResize: function(eventResizeInfo) {
         console.log('event resized', eventResizeInfo);
-
+        event = eventResizeInfo.event;
+        duration_min = (event.end - event.start) / 60000
+        console.log('new duration in minutes:', duration_min);
+        //update remotely
+        updateDuration(event.id, duration_min);
       },
       events:
       [
@@ -144,6 +148,24 @@ tr.strikeout td:before {
 {% block javascript %}
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 <script>
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
 function completeTask(event){
     console.log('called completeTask()');
     console.log(event.currentTarget.dataset.taskid);
@@ -159,13 +181,14 @@ function updateAgendaItem(event){
         window.location='update_agenda_item/' + event.currentTarget.dataset.itemid + '/new_time/' + newValue;
     }
 }
-function updateDuration() {
+function updateDuration(taskId, newDuration) {
     $.ajax({
         type: 'POST',
         url: "{% url 'update_task_duration' %}",
-        data: JSON.stringify({taskId: "0", duration: "30"}),
+        data: JSON.stringify({taskId: taskId, duration: newDuration}),
+        headers: {'X-CSRFToken': csrftoken},
         success: function(response) {
-            console.log('updateDuration success!');
+            console.log('updateDuration success!', response);
         },
         error: function(response) {
             console.log('updateDuration error!');
