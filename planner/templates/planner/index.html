@@ -184,7 +184,9 @@ function updateAgendaItem(event){
 function updateDuration(taskId, newDuration) {
     $.ajax({
         type: 'POST',
-        url: "{% url 'update_task_duration' %}",
+        url: '{% url 'update_task_duration' %}',
+        contentType: "application/json; charset=utf-8",
+        datatype: 'json',
         data: JSON.stringify({taskId: taskId, duration: newDuration}),
         headers: {'X-CSRFToken': csrftoken},
         success: function(response) {

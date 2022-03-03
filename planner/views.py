@@ -115,13 +115,16 @@ def update_agenda_item_time(request, item_id, new_time):
 
 def update_task_duration(request):
     # TODO retrieve task id and duration from POST body
-    task_id = 0
-    duration = 30
-    Task.objects.filter(pk=task_id).update(minutes_to_complete=duration)
-    return HttpResponse(
-        json.dumps({"nothing to see": "this isn't happening"}),
-        content_type="application/json"
-    )
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        print(json_data)
+        task_id = json_data.get('taskId', 0)
+        duration = json_data.get('duration', 30)
+        Task.objects.filter(pk=task_id).update(minutes_to_complete=duration)
+        return HttpResponse(
+            json.dumps({"nothing to see": "this isn't happening"}),
+            content_type="application/json"
+        )
 
 
 def delete_agenda_item(request, item_id):
