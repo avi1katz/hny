@@ -125,7 +125,7 @@ tr.strikeout td:before {
                             ({{ task.agenda_items.all.0.start_time }})
                         {% endif %}
                         </td>
-                        <td class="col-2">({{ task.minutes_to_complete }}min)</td>
+                        <td class="col-2 duration">({{ task.minutes_to_complete }}min)</td>
                         <td class="col-2"><a class="btn btn-sm btn-danger"
                                              data-confirm="Are you sure?"
                                              data-method="delete"
@@ -190,7 +190,10 @@ function updateDuration(taskId, newDuration) {
         data: JSON.stringify({taskId: taskId, duration: newDuration}),
         headers: {'X-CSRFToken': csrftoken},
         success: function(response) {
-            console.log('updateDuration success!', response);
+            if (response.task_id && response.new_duration) {
+                $(`#task_sortable .task[data-taskid=${response.task_id}] .duration`)
+                    .text(`(${response.new_duration}min)`);
+            }
         },
         error: function(response) {
             console.log('updateDuration error!');
