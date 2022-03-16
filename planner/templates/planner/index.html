@@ -53,13 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
         duration_min = (event.end - event.start) / 60000
         console.log('new duration in minutes:', duration_min);
         //update remotely
-        updateDuration(event.id, duration_min);
+        updateDuration(event.extendedProps.taskId, duration_min);
       },
       events:
       [
         {% for item in agenda.agenda_items.all %}
             {
                 id: {{ item.id }},
+                taskId: {{ item.task.id }},
                 title: "{{ item.task.description }}",
                 startTime: "{{ item.start_time|date:'H:i' }}",
                 duration: {minutes: {{ item.task.minutes_to_complete }}}
@@ -170,6 +171,7 @@ function completeTask(event){
     console.log('called completeTask()');
     console.log(event.currentTarget.dataset.taskid);
     window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;
+    //do this with ajax!
 }
 
 function updateAgendaItem(event){
@@ -181,24 +183,43 @@ function updateAgendaItem(event){
         window.location='update_agenda_item/' + event.currentTarget.dataset.itemid + '/new_time/' + newValue;
     }
 }
-function updateDuration(taskId, newDuration) {
-    $.ajax({
+
+function makeApiRequest(props) {
+    if (!props['url']) {
+        throw 'url is a required field!';
+    }
+    if (!props['data']) {
+        throw 'data is a required field!';
+    }
+    request = {
         type: 'POST',
-        url: '{% url 'update_task_duration' %}',
         contentType: "application/json; charset=utf-8",
         datatype: 'json',
-        data: JSON.stringify({taskId: taskId, duration: newDuration}),
         headers: {'X-CSRFToken': csrftoken},
         success: function(response) {
+            console.log(`${this.url} success!`);
+        },
+        error: function(response) {
+            console.log(`${this.url} error!`);
+        }
+    }
+    for (var attrname in props) { request[attrname] = props[attrname]; }
+    $.ajax(request);
+}
+
+function updateDuration(taskId, newDuration) {
+    props = {
+        url: '{% url 'update_task_duration' %}',
+        data: JSON.stringify({taskId: taskId, duration: newDuration}),
+        success: function(response) {
+            console.log('success here!', response.task_id, response.new_duration);
             if (response.task_id && response.new_duration) {
                 $(`#task_sortable .task[data-taskid=${response.task_id}] .duration`)
                     .text(`(${response.new_duration}min)`);
             }
-        },
-        error: function(response) {
-            console.log('updateDuration error!');
         }
-    });
+    }
+    makeApiRequest(props);
 }
 
 function createTask() {
