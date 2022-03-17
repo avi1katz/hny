@@ -9,7 +9,7 @@ urlpatterns = [
     path('update_agenda_item/<int:item_id>/new_time/<str:new_time>', views.update_agenda_item_time,
          name='update_agenda_item_time'),
     path('update_task_duration', views.update_task_duration, name='update_task_duration'),
-    path('delete_agenda_item/<int:item_id>', views.delete_agenda_item, name='update_agenda_item_time'),
+    path('delete_agenda_item/<int:item_id>', views.delete_agenda_item, name='delete_agenda_item'),
     path('create_task/', views.create_task, name='create_task'),
 ]
 

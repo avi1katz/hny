@@ -128,4 +128,5 @@ def update_task_duration(request):
 
 def delete_agenda_item(request, item_id):
     AgendaItem.objects.filter(id=item_id).delete()
-    return HttpResponseRedirect('/planner')
+    # return HttpResponseRedirect('/planner')
+    return HttpResponse()
