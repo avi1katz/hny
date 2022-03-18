@@ -53,10 +53,13 @@ def delete_task(request, task_id):
 
 
 def toggle_complete_task(request, task_id):
-    Task.objects.filter(pk=task_id)\
-        .update(is_completed=Q(is_completed=False))
-    return HttpResponseRedirect('/planner')
-
+    task = get_object_or_404(Task, pk=task_id)
+    task.is_completed = not task.is_completed
+    task.save()
+    return HttpResponse(
+        json.dumps({'id': task.id, 'is_completed': task.is_completed}),
+        content_type="application/json"
+    )
 
 def create_task(request):
     if request.method == 'POST':
@@ -128,5 +131,4 @@ def update_task_duration(request):
 
 def delete_agenda_item(request, item_id):
     AgendaItem.objects.filter(id=item_id).delete()
-    # return HttpResponseRedirect('/planner')
     return HttpResponse()

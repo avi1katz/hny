@@ -72,13 +72,16 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 </script>
 <style>
-tr.strikeout td:before {
+tr.complete td:before {
     content: " ";
     position: absolute;
     top: 45%;
     left: 0;
     border-bottom: 1px solid #111;
     width: 100%;
+}
+tr.complete {
+    background-color: rgba(0,0,0,.075);
 }
 #agenda {
     height: 90vh
@@ -115,7 +118,7 @@ tr.strikeout td:before {
                     {% for task in tasks %}
                     <tr
                             class="completable task
-                            {% if task.is_completed %} table-active strikeout{% endif %}
+                            {% if task.is_completed %}complete{% endif %}
                             {% if task.agenda_items.all %} table-warning {% endif %}
                             "
                             data-taskid="{{task.id}}"
@@ -167,10 +170,18 @@ function getCookie(name) {
 const csrftoken = getCookie('csrftoken');
 
 function completeTask(event){
-    console.log('called completeTask()');
-    console.log(event.currentTarget.dataset.taskid);
-    window.location='toggle_complete_task/' + event.currentTarget.dataset.taskid;
+    taskId = event.currentTarget.dataset.taskid
     //do this with ajax!
+    props = {
+        url: 'toggle_complete_task/' + taskId,
+        success: function(response) {
+            if (response.id) {
+                $(`#task_sortable .task[data-taskid=${response.id}]`)
+                    .toggleClass('complete');
+            }
+        }
+    }
+    makeApiRequest(props);
 }
 
 function deleteAgendaItem(agendaItemId, taskId) {
@@ -200,10 +211,6 @@ function updateAgendaItem(event){
 function makeApiRequest(props) {
     if (!props['url']) {
         throw 'url is a required field!';
-    }
-    if (!props['data']) {
-        if (!props['type'] || props['type'] == 'POST')
-            throw 'data is a required field!';
     }
     request = {
         type: 'POST',
