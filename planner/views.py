@@ -104,11 +104,15 @@ def add_task_at_index(request, task_id, item_index):
 
 
 def add_task_at_time(request, task_id, time):
-    AgendaItem.objects.update_or_create(
+    item, _ = AgendaItem.objects.update_or_create(
         task=Task.objects.get(pk=task_id), agenda=Agenda.objects.get(date=datetime.now().date()),
         defaults={'start_time': time})
 
-    return HttpResponseRedirect('/planner')
+    # return HttpResponseRedirect('/planner')
+    return HttpResponse(
+        json.dumps({'task_id': task_id, 'time': item.start_time}),
+        content_type="application/json"
+    )
 
 
 def update_agenda_item_time(request, item_id, new_time):

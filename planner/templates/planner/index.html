@@ -39,8 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
       droppable: true, // this allows things to be dropped onto the calendar
       drop: function(info) {
         console.log(info);
-        window.location='add_task/' + info.draggedEl.dataset.taskid +
-        '/at_time/' + info.date.getHours()+':'+info.date.getMinutes();
+        taskId = info.draggedEl.dataset.taskid;
+        time = `${info.date.getHours()}:${info.date.getMinutes()}`;
+        //window.location='add_task/' + info.draggedEl.dataset.taskid +
+        //'/at_time/' + info.date.getHours()+':'+info.date.getMinutes();
+        addTask(taskId, time);
       },
       eventClick: function(mouseClickInfo) {
         agendaItemId = mouseClickInfo.event.id;
@@ -169,6 +172,19 @@ function getCookie(name) {
 }
 const csrftoken = getCookie('csrftoken');
 
+function addTask(taskId, time) {
+    props = {
+        url: `add_task/${taskId}/at_time/${time}`,
+        success: function(response) {
+            console.log(response);
+            taskTr = $(`#task_sortable .task[data-taskid=${taskId}]`);
+            taskTr.addClass('table-warning');
+            taskTr.find('.startTime').text(`(${time})`)
+        }
+    }
+    makeApiRequest(props);
+}
+
 function completeTask(event){
     taskId = event.currentTarget.dataset.taskid
     //do this with ajax!
@@ -196,16 +212,6 @@ function deleteAgendaItem(agendaItemId, taskId) {
         }
     }
     makeApiRequest(props);
-}
-
-function updateAgendaItem(event){
-    originalValue = event.target.defaultValue;
-    newValue = event.target.value;
-    console.log(event.target.value);
-    console.log(event.target.defaultValue);
-    if ( originalValue !== newValue) {
-        window.location='update_agenda_item/' + event.currentTarget.dataset.itemid + '/new_time/' + newValue;
-    }
 }
 
 function makeApiRequest(props) {
