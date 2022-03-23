@@ -128,7 +128,7 @@ tr.complete {
                             data-duration="{{task.minutes_to_complete}}">
                         <td class="col-8 description">{{ task.description  }}
                         {% if task.agenda_items.all %}
-                            <span class="startTime">({{ task.agenda_items.all.0.start_time }})</span>
+                            <span class="startTime">({{ task.agenda_items.all.0.start_time | date:"g:i" }})</span>
                         {% endif %}
                         </td>
                         <td class="col-2 duration">({{ task.minutes_to_complete }}min)</td>
